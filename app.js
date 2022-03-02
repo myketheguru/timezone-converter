@@ -3,12 +3,12 @@ if (!document.domain.includes('https')) {
 }
 
 async function fetchTimeZones () {
-    let response = await fetch('http://worldtimeapi.org/api/timezone')
+    let response = await fetch('https://worldtimeapi.org/api/timezone')
     return response.json()
 }
 
 async function convertTime (from, to) {
-    let response = await fetch('http://www.timeapi.io/api/Conversion/ConvertTimeZone', {
+    let response = await fetch('https://www.timeapi.io/api/Conversion/ConvertTimeZone', {
         method: 'POST',
         body: JSON.stringify({
             fromTimeZone: from,
