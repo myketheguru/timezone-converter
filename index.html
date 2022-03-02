@@ -24,7 +24,7 @@
             <span class="mt-5">to</span>
             <select-box :options="options" :default="secondBox" @time-zone="handleSecond"></select-box>
         </div>
-        <h2>The time is 00:00 in {{ secondBox }}</h2>
+        <h2 class="text-2xl font-bold text-gray-400">The time is {{ timeValue || '00:00' }} in {{ secondBox }}</h2>
     </div>
     <!-- Script Below -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>

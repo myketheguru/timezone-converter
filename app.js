@@ -1,6 +1,7 @@
-if (!document.domain.includes('https')) {
-    // document.domain
-}
+// fetch('https://www.timeapi.io/api/Time/current/zone?timeZone=Europe/Amsterdam').then(res => res.json())
+// .then(data => {
+//     console.log(data);
+// })
 
 async function fetchTimeZones () {
     let response = await fetch('https://worldtimeapi.org/api/timezone')
@@ -8,13 +9,22 @@ async function fetchTimeZones () {
 }
 
 async function convertTime (from, to) {
-    let response = await fetch('https://www.timeapi.io/api/Conversion/ConvertTimeZone', {
+    let dateObj = new Date().toISOString().split('T')
+    let date = dateObj[0]
+    let time = dateObj[1].split('.')[0]
+    let response = await fetch('https://cors-overlords.herokuapp.com/post', {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
-            fromTimeZone: from,
-            dateTime: new Date().toISOString(),
-            toTimeZone: to,
-            dstAmbiguity: ""
+            url: 'https://timeapi.io/api/Conversion/ConvertTimeZone/',
+            data: {
+                fromTimeZone: from,
+                dateTime: `${date} ${time}`,
+                toTimeZone: to,
+                dstAmbiguity: ""
+            }
         })
     })
 
@@ -129,13 +139,14 @@ const app =  new Vue({
         },
         getTime (first, second) {
             convertTime(first, second).then(data => {
-                console.log(data);
+                this.timeValue = data?.conversionResult?.time
             })
         }
     },
     created () {
         fetchTimeZones().then(d => {
             this.options = d
-        })
+        }),
+        this.getTime(this.firstBox, this.secondBox)
     },
   })
