@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- component -->
+    <style>
+        .top-100 {top: 100%}
+        .bottom-100 {bottom: 100%}
+        .max-h-select {
+            max-height: 300px;
+        }
+    </style>    
+</head>
+<body class="h-full">
+    <div id="app" class="h-full flex items-center flex-col py-20 px-5 md:px-20">
+        <h1 class="text-4xl font-bold text-gray-500">Time Converter</h1>
+        <p class="text-gray-400">Simple tool to check the time in any timezone!</p>
+        <div class="arena flex items-start gap-10 py-5">
+            <select-box :options="options" :default="firstBox" @time-zone="handleFirst"></select-box>
+            <span class="mt-5">to</span>
+            <select-box :options="options" :default="secondBox" @time-zone="handleSecond"></select-box>
+        </div>
+        <h2>The time is 00:00 in {{ secondBox }}</h2>
+    </div>
+    <!-- Script Below -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="./app.js"></script>
+</body>
+</html>
