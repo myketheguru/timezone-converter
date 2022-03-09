@@ -8,6 +8,11 @@ async function fetchTimeZones () {
     return response.json()
 }
 
+async function getSingleTime (timezone) {
+    let response = await fetch(`https://cors-overlords.herokuapp.com/get/?url=https://timeapi.io/api/Time/current/zone?timeZone=${timezone}`)
+    return response.json()
+}
+
 async function convertTime (from, to) {
     let dateObj = new Date().toISOString().split('T')
     let date = dateObj[0]
@@ -32,7 +37,7 @@ async function convertTime (from, to) {
 }
 
 Vue.component('select-box', {
-    props: ['options', 'default'],
+    props: ['options', 'default', 'time'],
     emits: ['time-zone'],
     data () {
         return {
@@ -50,7 +55,7 @@ Vue.component('select-box', {
             this.$emit('time-zone', value)
         },
         filterOptions () {
-            let options = this.options.filter(option => option.toLowerCase().includes(this.searchTerm.toLowerCase))
+            let options = this.options.filter(option => option.toLowerCase().includes(this.searchTerm.toLowerCase()))
             this.allOptions = options
         },
         toggleOptions () {
@@ -69,6 +74,9 @@ Vue.component('select-box', {
     <div class="flex-auto flex flex-col items-center max-h-50 h-auto">
         <div class="flex flex-col items-center relative">
             <div class="w-full  svelte-1l8159u">
+                <div class="text-blue-500 text-sm">
+                    Current Time: {{ time || '00:00' }}
+                </div>
                 <div class="my-2 bg-white p-1 flex border border-gray-200 rounded svelte-1l8159u">
                     <div class="flex flex-auto flex-wrap"></div>
                     <input class="p-1 px-2 h-10 text-lg appearance-none outline-none w-full text-gray-800  svelte-1l8159u" v-model="searchTerm" @input="filterOptions" @click="toggleOptions">
@@ -126,6 +134,8 @@ const app =  new Vue({
       options: ['obi', 'ada', 'kunle'],
       firstBox: Intl.DateTimeFormat().resolvedOptions().timeZone,
       secondBox: 'America/New_York',
+      firstBoxTime: '',
+      secondBoxTime: '',
       timeValue: ''      
     },
     methods: {
@@ -138,15 +148,25 @@ const app =  new Vue({
             this.getTime(this.firstBox, this.secondBox)
         },
         getTime (first, second) {
-            convertTime(first, second).then(data => {
-                this.timeValue = data?.conversionResult?.time
-            })
-        }
+            (async () => {
+                let f = await getSingleTime(this.firstBox)
+                this.firstBoxTime = f.time
+                let s = await getSingleTime(this.secondBox)
+                this.secondBoxTime = s.time
+                convertTime(first, second).then(data => {
+                    this.timeValue = data?.conversionResult?.time
+                })
+            })()
+        },
     },
-    created () {
+    async created () {
         fetchTimeZones().then(d => {
             this.options = d
         }),
         this.getTime(this.firstBox, this.secondBox)
+        let f = await getSingleTime(this.firstBox)
+        let s = await getSingleTime(this.secondBox)
+        this.firstBoxTime = f.time
+        this.secondBoxTime = s.time
     },
   })
